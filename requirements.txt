@@ -1,0 +1,7 @@
+streamlit
+people_also_ask
+pandas
+scikit-learn
+textblob
+altair
+playwright
