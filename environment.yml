@@ -11,4 +11,3 @@ dependencies:
     - scikit-learn
     - textblob
     - altair
-    - playwright
