@@ -2,6 +2,7 @@ import math
 import random
 import re
 import nltk
+import pandas as pd
 from textblob import TextBlob
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
@@ -103,20 +104,15 @@ def cluster_questions(questions, n_clusters=5):
         # Fallback if vocabulary is empty or other issues
         return [0] * len(questions)
 
-def validate_keyword(keyword):
+
+def sanitize_dataframe_for_csv(df):
     """
-    Validates the keyword input.
-    Returns:
-        (bool, str): (is_valid, error_message)
+    Sanitizes a DataFrame to prevent CSV Injection.
+    Prepends a single quote to any cell value starting with =, +, -, or @.
     """
-    if not keyword:
-        return False, "Please enter a keyword."
-
-    if len(keyword) > 100:
-        return False, "Keyword is too long (max 100 characters)."
-
-    # Whitelist of allowed characters: alphanumeric, spaces, hyphens, dots, plus signs, parentheses, question marks, quotes, colons, commas
-    if not re.match(r"^[a-zA-Z0-9\s\-\.\+\(\)\?\"\'\:,]+$", keyword):
-        return False, "Invalid characters in keyword. Only alphanumeric and common punctuation (., -, +, ?, (), \", ', :, ,) are allowed."
-
-    return True, ""
+    df_safe = df.copy()
+    for col in df_safe.select_dtypes(include=['object']).columns:
+        df_safe[col] = df_safe[col].apply(
+            lambda x: f"'{x}" if isinstance(x, str) and x.startswith(('=', '+', '-', '@')) else x
+        )
+    return df_safe
