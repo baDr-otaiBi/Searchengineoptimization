@@ -1,6 +1,8 @@
 import math
 import random
+import re
 import nltk
+import pandas as pd
 from textblob import TextBlob
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
@@ -101,3 +103,16 @@ def cluster_questions(questions, n_clusters=5):
     except ValueError:
         # Fallback if vocabulary is empty or other issues
         return [0] * len(questions)
+
+
+def sanitize_dataframe_for_csv(df):
+    """
+    Sanitizes a DataFrame to prevent CSV Injection.
+    Prepends a single quote to any cell value starting with =, +, -, or @.
+    """
+    df_safe = df.copy()
+    for col in df_safe.select_dtypes(include=['object']).columns:
+        df_safe[col] = df_safe[col].apply(
+            lambda x: f"'{x}" if isinstance(x, str) and x.startswith(('=', '+', '-', '@')) else x
+        )
+    return df_safe

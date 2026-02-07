@@ -4,6 +4,10 @@ import pandas as pd
 import altair as alt
 import utils
 
+@st.cache_data
+def get_related_questions_cached(keyword, limit):
+    return people_also_ask.get_related_questions(keyword, limit)
+
 st.set_page_config(page_title="Gap Hunter", page_icon="Vx", layout="wide")
 
 st.title("Google Gap Hunter")
@@ -24,7 +28,8 @@ keyword = st.text_input("Target Keyword", placeholder="e.g. Crypto Trading")
 limit = st.slider("Number of Questions", min_value=10, max_value=50, value=20)
 
 if st.button("Start Mining"):
-    if keyword:
+    is_valid, error_msg = utils.validate_keyword(keyword)
+    if is_valid:
         try:
             with st.spinner(f"Mining data for: {keyword}..."):
                 questions = []
@@ -33,8 +38,8 @@ if st.button("Start Mining"):
                 else:
                     try:
                         questions = people_also_ask.get_related_questions(keyword, limit)
-                    except Exception as api_error:
-                        st.warning(f"API Error: {api_error}. Falling back to mock data.")
+                    except Exception:
+                        st.warning("API Error. Falling back to mock data.")
                         questions = utils.mock_questions(keyword, limit)
 
                 if not questions:
@@ -90,7 +95,7 @@ if st.button("Start Mining"):
                         )
                         st.altair_chart(bar, use_container_width=True)
 
-                    csv = df.to_csv(index=False).encode('utf-8')
+                    csv = utils.sanitize_dataframe_for_csv(df).to_csv(index=False).encode('utf-8')
                     st.download_button(
                         label="Download Data (CSV)",
                         data=csv,
@@ -100,7 +105,7 @@ if st.button("Start Mining"):
                 else:
                     st.warning("No PAA questions found. Try a broader keyword.")
                     
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
+        except Exception:
+            st.error("An unexpected error occurred. Please try again later.")
     else:
-        st.error("Please enter a keyword.")
+        st.error(error_msg)
