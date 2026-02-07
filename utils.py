@@ -1,5 +1,6 @@
 import math
 import random
+import re
 import nltk
 from textblob import TextBlob
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -101,3 +102,21 @@ def cluster_questions(questions, n_clusters=5):
     except ValueError:
         # Fallback if vocabulary is empty or other issues
         return [0] * len(questions)
+
+def validate_keyword(keyword):
+    """
+    Validates the keyword input.
+    Returns:
+        (bool, str): (is_valid, error_message)
+    """
+    if not keyword:
+        return False, "Please enter a keyword."
+
+    if len(keyword) > 100:
+        return False, "Keyword is too long (max 100 characters)."
+
+    # Whitelist of allowed characters: alphanumeric, spaces, hyphens, dots, plus signs, parentheses, question marks, quotes, colons, commas
+    if not re.match(r"^[a-zA-Z0-9\s\-\.\+\(\)\?\"\'\:,]+$", keyword):
+        return False, "Invalid characters in keyword. Only alphanumeric and common punctuation (., -, +, ?, (), \", ', :, ,) are allowed."
+
+    return True, ""
