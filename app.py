@@ -90,7 +90,7 @@ if st.button("Start Mining"):
                         )
                         st.altair_chart(bar, use_container_width=True)
 
-                    csv = df.to_csv(index=False).encode('utf-8')
+                    csv = utils.sanitize_dataframe_for_csv(df).to_csv(index=False).encode('utf-8')
                     st.download_button(
                         label="Download Data (CSV)",
                         data=csv,
