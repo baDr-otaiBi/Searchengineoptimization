@@ -4,6 +4,10 @@ import pandas as pd
 import altair as alt
 import utils
 
+@st.cache_data
+def get_related_questions_cached(keyword, limit):
+    return people_also_ask.get_related_questions(keyword, limit)
+
 st.set_page_config(page_title="Gap Hunter", page_icon="Vx", layout="wide")
 
 st.title("Google Gap Hunter")
@@ -32,7 +36,7 @@ if st.button("Start Mining"):
                     questions = utils.mock_questions(keyword, limit)
                 else:
                     try:
-                        questions = people_also_ask.get_related_questions(keyword, limit)
+                        questions = get_related_questions_cached(keyword, limit)
                     except Exception as api_error:
                         st.warning(f"API Error: {api_error}. Falling back to mock data.")
                         questions = utils.mock_questions(keyword, limit)
