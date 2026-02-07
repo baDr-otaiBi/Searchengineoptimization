@@ -1,5 +1,6 @@
 import math
 import random
+import re
 import nltk
 import pandas as pd
 from textblob import TextBlob

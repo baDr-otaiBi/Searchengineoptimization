@@ -28,7 +28,8 @@ keyword = st.text_input("Target Keyword", placeholder="e.g. Crypto Trading")
 limit = st.slider("Number of Questions", min_value=10, max_value=50, value=20)
 
 if st.button("Start Mining"):
-    if keyword:
+    is_valid, error_msg = utils.validate_keyword(keyword)
+    if is_valid:
         try:
             with st.spinner(f"Mining data for: {keyword}..."):
                 questions = []
@@ -107,4 +108,4 @@ if st.button("Start Mining"):
         except Exception:
             st.error("An unexpected error occurred. Please try again later.")
     else:
-        st.error("Please enter a keyword.")
+        st.error(error_msg)
