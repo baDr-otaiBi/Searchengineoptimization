@@ -4,6 +4,10 @@ import pandas as pd
 import altair as alt
 import utils
 
+@st.cache_data
+def get_related_questions_cached(keyword, limit):
+    return people_also_ask.get_related_questions(keyword, limit)
+
 st.set_page_config(page_title="Gap Hunter", page_icon="Vx", layout="wide")
 
 st.title("Google Gap Hunter")
