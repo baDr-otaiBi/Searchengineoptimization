@@ -36,9 +36,9 @@ if st.button("Start Mining"):
                     questions = utils.mock_questions(keyword, limit)
                 else:
                     try:
-                        questions = get_related_questions_cached(keyword, limit)
-                    except Exception as api_error:
-                        st.warning(f"API Error: {api_error}. Falling back to mock data.")
+                        questions = people_also_ask.get_related_questions(keyword, limit)
+                    except Exception:
+                        st.warning("API Error. Falling back to mock data.")
                         questions = utils.mock_questions(keyword, limit)
 
                 if not questions:
@@ -104,7 +104,7 @@ if st.button("Start Mining"):
                 else:
                     st.warning("No PAA questions found. Try a broader keyword.")
                     
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
+        except Exception:
+            st.error("An unexpected error occurred. Please try again later.")
     else:
         st.error("Please enter a keyword.")
